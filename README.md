@@ -41,8 +41,8 @@ cd team-up-test
 ### Установите необходимые зависимости
 
 ```bash
-poetry install
 poetry shell
+poetry install
 ```
 
 ### Настройка и миграции базы данных
