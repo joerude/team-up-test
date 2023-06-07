@@ -1,38 +1,27 @@
-import string
-import random
 from datetime import datetime
 
 from django.db.models import Prefetch
 from django.utils import timezone
 
 from rest_framework import status
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.views import APIView
 
 from .models import Test, IQTestResult, EQTestResult
 from .serializers import TestSerializer, IQTestResultSerializer, EQTestResultSerializer
+from .utils import generate_unique_login
 
 
 class TestCreateView(APIView):
     def post(self, request):
-        login = self.generate_unique_login()
+        login = generate_unique_login()
         serializer = TestSerializer(data={'login': login})
         if serializer.is_valid():
             test = serializer.save()
             return Response({'login': test.login}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @staticmethod
-    def generate_unique_login():
-        login_length = 10
-        characters = string.ascii_letters + string.digits
-        while True:
-            login = ''.join(random.choices(characters, k=login_length))
-            try:
-                Test.objects.get(login=login)
-            except Test.DoesNotExist:
-                return login
 
 
 class TestResultView(APIView):
@@ -67,7 +56,7 @@ class IQTestResultCreateView(APIView):
     Пример тела запроса:
     {
     "login":  "randomdata",
-    "iq_score": 25
+    "score": 25
     }
     """
 
@@ -100,7 +89,7 @@ class EQTestResultCreateView(APIView):
     """
     ALLOWED_ANSWERS = ["а", "б", "в", "г", "д"]
 
-    def validate_answers(self, answers):
+    def validate_answers(self, answers: list[str]) -> None:
         if not isinstance(answers, list) or len(answers) != 5:
             raise ValidationError("Поле 'answers' должно содержать 5 элементов.")
 
@@ -116,10 +105,7 @@ class EQTestResultCreateView(APIView):
         login = request.data.get('login')
         answers = request.data.get('answers')
 
-        try:
-            test = Test.objects.get(login=login)
-        except Test.DoesNotExist:
-            return Response({'detail': 'Test not found.'}, status=status.HTTP_404_NOT_FOUND)
+        test = get_object_or_404(Test, login=login)
 
         try:
             self.validate_answers(answers)
