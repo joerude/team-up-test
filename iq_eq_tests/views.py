@@ -6,12 +6,13 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 
 from .models import Test, IQTestResult, EQTestResult
 from .serializers import TestSerializer, IQTestResultSerializer, EQTestResultSerializer
 from .utils import generate_unique_login
+from .validations import validate_answers
 
 
 class TestCreateView(APIView):
@@ -28,7 +29,7 @@ class TestResultView(APIView):
     """Вью для получения результатов тестов по login
 
     Пример запроса:
-    GET /api/result/randomdata/
+    GET /api/result/generated_login/
     """
 
     def get(self, request, login):
@@ -55,7 +56,7 @@ class IQTestResultCreateView(APIView):
 
     Пример тела запроса:
     {
-    "login":  "randomdata",
+    "login":  "generated_login",
     "score": 25
     }
     """
@@ -64,10 +65,7 @@ class IQTestResultCreateView(APIView):
         login = request.data.get('login')
         score = request.data.get('score')
 
-        try:
-            test = Test.objects.get(login=login)
-        except Test.DoesNotExist:
-            raise NotFound(detail='Test not found.')
+        test = get_object_or_404(Test, login=login)
 
         data = {'test': test.id, 'score': score, 'timestamp': timezone.now()}
         serializer = IQTestResultSerializer(data=data)
@@ -83,32 +81,18 @@ class EQTestResultCreateView(APIView):
     """View для добавления результатов EQ тестов
     Пример тела запроса:
 
-    "login":  "randomdata",
+    "login":  "generated_login",
     "answers": ["а", "б", "в", "г", "д"]
     }
     """
-    ALLOWED_ANSWERS = ["а", "б", "в", "г", "д"]
-
-    def validate_answers(self, answers: list[str]) -> None:
-        if not isinstance(answers, list) or len(answers) != 5:
-            raise ValidationError("Поле 'answers' должно содержать 5 элементов.")
-
-        invalid_answers = [answer for answer in answers if answer not in self.ALLOWED_ANSWERS]
-        if invalid_answers:
-            invalid_answers_str = ', '.join(invalid_answers)
-            raise ValidationError(
-                f"Некорректный ответ: {invalid_answers_str}. "
-                f"Допустимые значения ответов: 'а', 'б', 'в', 'г', 'д'."
-            )
 
     def post(self, request):
         login = request.data.get('login')
         answers = request.data.get('answers')
-
         test = get_object_or_404(Test, login=login)
 
         try:
-            self.validate_answers(answers)
+            validate_answers(answers)
         except ValidationError as e:
             return Response({'detail': e.detail}, status=status.HTTP_400_BAD_REQUEST)
 

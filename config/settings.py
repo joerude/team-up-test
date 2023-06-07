@@ -6,8 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 
-DEBUG = True
-# DEBUG = False
+# DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',  # https://github.com/tfranzel/drf-spectacular
     'drf_spectacular_sidecar',
-    'debug_toolbar',
 
     # apps
     'iq_eq_tests'
@@ -37,10 +36,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # debug
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -94,9 +89,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -118,18 +113,10 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'IQ and EQ Tests API',
+    'DESCRIPTION': 'Тестовое задание в TeamUp',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-# django-debug-toolbar
-if DEBUG:
-    INTERNAL_IPS = [
-        '127.0.0.1',
-    ]
 
-    DEBUG_TOOLBAR_PANELS = [
-        'debug_toolbar.panels.sql.SQLPanel',
-    ]
