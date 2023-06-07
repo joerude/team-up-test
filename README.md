@@ -35,13 +35,14 @@
 
 ```bash
 git clone https://github.com/joerude/team-up-test.git
-cd team-up-test
+cd test_team_up
 ```
 
 ### Установите необходимые зависимости
 
 ```bash
 poetry install
+poetry shell
 ```
 
 ### Настройка и миграции базы данных
@@ -58,4 +59,9 @@ python3 manage.py runserver
 ```
 
 ### Документация API
-Документацию API можно найти по адресу `127.0.0.1:8000/api/schema/redoc/`
+
+Документацию API можно найти по адресу
+
+```bash
+127.0.0.1:8000/api/schema/redoc/
+```
