@@ -60,3 +60,10 @@ python3 manage.py runserver
 
 ### Документация API
 Документацию API можно найти по адресу `127.0.0.1:8000/api/schema/redoc/`
+
+```
+POST api/test/ - сгенерирует 10-значный логин
+POST api/result/iq/ - Сохранит результаты теста (score) IQ и время когда он был пройден по login
+POST api/result/eq/ - Сохранит результаты теста (answers) EQ и время когда он был пройден по login
+GET  api/result/{login}/ - Получит результаты двух тестов IQ и EQ по login
+```
