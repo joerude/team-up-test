@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.db.models import Prefetch
 from django.utils import timezone
 
@@ -96,7 +94,7 @@ class EQTestResultCreateView(APIView):
         except ValidationError as e:
             return Response({'detail': e.detail}, status=status.HTTP_400_BAD_REQUEST)
 
-        result = EQTestResult.objects.create(test=test, answers=answers, timestamp=datetime.now())
+        result = EQTestResult.objects.create(test=test, answers=answers, timestamp=timezone.now())
         serializer = EQTestResultSerializer(result)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
