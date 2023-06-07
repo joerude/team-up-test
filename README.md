@@ -35,7 +35,7 @@
 
 ```bash
 git clone https://github.com/joerude/team-up-test.git
-cd test_team_up
+cd team-up-test
 ```
 
 ### Установите необходимые зависимости
